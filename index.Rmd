@@ -52,7 +52,7 @@ Note that Chrome is heavily recommended for viewing the 3D models.
 * [3D Unit Surfaces](threejs/3D Surface Visualization/index.html)
 </h3>
 
-# Low Resolution Models
+## Low Resolution Models
 Note that Chrome is heavily recommended for viewing the 3D models. 
 
 <h3>
