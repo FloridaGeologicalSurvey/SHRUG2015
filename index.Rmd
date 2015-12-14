@@ -1,0 +1,191 @@
+---
+title: "Using QGIS to Generate Web-Ready 3D Visualizations."
+author: "Seth W. Bassett, GISP, Levi M. Hannon, Katherine M. White"
+date: "November 16, 2015"
+output: 
+  html_document:
+    toc: yes
+    toc_depth: 3
+    theme: cerulean
+    number_sections: false
+---
+```{r knitr_global_opts, echo=FALSE}
+# knitr global opts
+knitr::opts_chunk$set(fig.width=10, fig.height=8,
+                      echo=FALSE, warning=FALSE, message=FALSE)
+```
+
+
+# Introduction
+
+This is a simple github.io and RMarkdown wrapper for the author's Florida Geological Survey's (FGS) 2015 Seven Hills Regional User's Group (SHRUG) presentation. The RMarkdown and HTML code used to generate this page can be found [by following this link](https://github.com/FloridaGeologicalSurvey/SHRUG2015/tree/gh_pages).
+
+All 3D models were based off geologic formation picks made by the FGS' [STATEMAP](http://www.dep.state.fl.us/geology/programs/statemap.htm) geologic mapping team. The STATEMAP program is co-funded by matching federal and state funds and is tasked with surficial geologic mapping of the state of Florida. This data has been published by the FGS as an official publication as below:
+
+> [Geologic map of the U.S.G.S. Tarpon Springs 30 x 60 minute quadrangle, central Florida [3 plates], by R.C.
+Green, W.L. Evans, C.P. Williams, C. Kromhout, S.W. Bassett, and L.M. Hannon, 2012. Scale 1:100,000.](http://www.dep.state.fl.us/geology/programs/statemap/index.html#19)
+
+> [Text to accompany geologic map of the U.S.G.S. Tarpon Springs 30 x 60 minute quadrangle, central
+Florida (Open-File Map Series 104), by R.C. Green, W. L. Evans III, C.P. Williams, C. Kromhout,
+and S.W. Bassett, 2012, 40 p.](http://publicfiles.dep.state.fl.us/FGS/FGS_Publications/OFR/OFR98_FINAL.pdf)
+
+The FGS staff would like to especially thank Tanner Arrington of the South Carolina Department of Natural Resources for putting together the original poster on QGIS and threejs that inspired this presentation. That poster was presented at the USGS Digital Mapping Techniques 2015 conference in Utah, and can be found online [at this location](http://ngmdb.usgs.gov/Info/dmt/docs/DMT15_Arrington.pdf).
+
+# Licensing and Data Quality
+
+The data and analysis contined within this page are public domain.
+
+Users should be warned that the geologic data contained within these models has been heavily manipulated for visualization purposes and has __not__ be re-verified as accurate by a Professional Geologist. Thickness of Avon Park units (Tap) has been extruded to the total depth of the well and thus potentially overrepresent the depth of this unit. Caution is advised when interpreting these models with regards to this unit in particular. 
+
+# Presentation
+
+Web-ready copies of the presentation slides from the SHRUG session [can be found here](presentation/index.html)
+
+# 3D Models
+<h3>
+* [3D Borehole + Pansharpend Lidar](threejs/3D Borehole Visualization/index.html)
+* [3D Borehole + Lidar](threejs/3D Borehole and LiDAR Visualization/index.html)
+* [3D Unit Surfaces](threejs/3D Surface Visualization/index.html)
+</h3>
+
+# Low Resolution 3D Models (mobile compatible)
+<h3>
+* [3D Borehole + Pansharpend Lidar](threejs_lowres/3D Borehole Visualization- Low Resolution/index.html)
+* [3D Borehole + Lidar](threejs_lowres/3D Borehole and LiDAR Visualization- Low Resolution/index.html)
+* [3D Unit Surfaces](threejs_lowres/3D Surface Visualization - Low Resolution/index.html)
+</h3>
+
+
+# Exploratory Data Analysis
+
+```{r setup}
+
+
+# import visualization libraries
+library(ggplot2)
+library(leaflet)
+library(magrittr)
+library(ggthemes)
+
+# data manipulation libraries
+library(plyr)
+library(reshape2)
+library(stringr)
+
+#set working directory
+setwd("./csv")
+
+# read borehole data, note na.strings parameter
+boreholes <- read.csv("boreholes.csv", na.strings = "999")
+
+# pretty well numbers
+boreholes$WNUMBER <- paste("W-", as.character(boreholes$WNUMBER), sep="")
+boreholes$TOTALDEPTH <- as.numeric(as.character(boreholes$TOTALDEPTH))
+```
+
+## Interactive Well Map
+
+```{r well_map}
+
+# Create leaflet object
+# center of setView set to the center of well data
+TSMap <- leaflet() %>%
+  addTiles() %>%
+  setView(mean(boreholes$long), mean(boreholes$lat), zoom=9) %>%
+  addCircleMarkers(data = boreholes, 
+                   lng = ~long, 
+                   lat = ~ lat, 
+                   popup = boreholes$WNUMBER,
+                   radius = 1,
+                   opacity = 1,
+                   fillOpacity = 1)
+
+TSMap
+
+```
+
+## Unit Elevations
+
+```{r elevation_distributions}
+#grep columns that have "_top" in them, melt
+var.positions <- grep("_top", names(boreholes))
+boreholes.long <- melt(boreholes, id.vars = c(2,3, 28, 29), measure.vars = var.positions)
+
+#calculate MSL
+boreholes.long$MSL <- (boreholes.long$Lidar_Elev + boreholes.long$value)
+
+#ordering and colors
+unitOrder <- c("Qu","TQsu","TQu","Tc","Thpb","Th","Thc","That","Ts","To","Tap")
+unitColors <- c("#FFFFBD", "#ffdf80", "#FFECCD", "#9C9C9C", "#82C496", "#C8F0DC", "#70db70", "#FFBFE9", "#A39CE6", "#2686E0", "#000099")
+
+#prettify unit names by splitting strings
+unitNames <- str_split_fixed(boreholes.long$variable, "_", 2)
+boreholes.long$Unit <- factor(unitNames[,1], levels = unitOrder, labels = unitOrder)
+
+
+bplot <- ggplot(boreholes.long, aes(x = Unit, y = MSL))
+bplot + 
+  theme_tufte() + 
+  geom_boxplot(aes(fill = Unit), width = 0.5, weight = 0.1) + 
+  labs(x = "Unit", y = "MSL Elevation (ft NAVD88)") + 
+  ggtitle("Top of Unit Elevation\nTarpon Springs\nUSGS 1:100,000 Quandrangle and Surrounds") + 
+  scale_fill_manual(values = unitColors)
+
+
+```
+
+## Unit Thickness
+
+```{r thickness_distributions}
+
+# recast to fix
+boreholes$That_height <- as.numeric(as.character(boreholes$That_height))
+boreholes$Tap_height <- as.numeric(as.character(boreholes$Tap_height))
+boreholes$To_height <- as.numeric(as.character(boreholes$To_height))
+
+# grep depths and melt
+var.positions <- grep("_height", names(boreholes))
+boreholes.thickness <- melt(boreholes, id.vars = c(2,3, 28, 29), measure.vars = var.positions)
+
+# prettify unit names
+unitNames <- str_split_fixed(boreholes.thickness$variable, "_", 2)
+boreholes.thickness$Unit <- factor(unitNames[,1], levels = unitOrder, labels = unitOrder)
+
+bplot <- ggplot(boreholes.thickness, aes(x = Unit, y = value))
+bplot + 
+  theme_tufte() + 
+  geom_boxplot(aes(fill = Unit), width = 0.5, weight = 0.1)  + 
+  labs(x = "Unit", y = "Unit Thickness (ft NAVD88)") + 
+  ggtitle("Unit Thickness\nTarpon Springs\nUSGS 1:100,000 Quandrangle and Surrounds") + 
+  scale_fill_manual(values = unitColors)
+
+```
+
+## Directional Trends in Unit Elevations
+
+```{r trending_surfaces}
+bplot <- ggplot(na.omit(boreholes.long), aes(y = MSL, x = lat, colour=Unit))
+bplot + 
+  theme_minimal() + 
+  geom_point() + 
+  geom_smooth(aes(group=Unit, colour=Unit, fill=Unit), method="lm") +
+  #facet_grid(variable~.) +
+  labs(x="Latitude", y="Elevation (ft. MSL NAVD88)") + 
+  ggtitle("South-North Trend of Unit Elevations") + 
+  scale_colour_manual(values = unitColors, guide=FALSE) + 
+  scale_fill_manual(values = unitColors)
+
+
+bplot <- ggplot(na.omit(boreholes.long), aes(y = MSL, x = long, colour=Unit))
+bplot + 
+  theme_minimal() + 
+  geom_point() + 
+  geom_smooth(aes(group=Unit, colour=Unit, fill=Unit), method="lm") +
+  #facet_grid(variable~.) +
+  labs(x="Latitude", y="Elevation (ft. MSL NAVD88)") + 
+  ggtitle("West-East Trend of Unit Elevations") +
+    scale_colour_manual(values = unitColors, guide=FALSE) + 
+  scale_fill_manual(values = unitColors)
+```
+
+
