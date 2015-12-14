@@ -18,7 +18,7 @@ knitr::opts_chunk$set(fig.width=10, fig.height=8,
 
 # Introduction
 
-This is a simple github.io and RMarkdown wrapper for the author's Florida Geological Survey's (FGS) 2015 Seven Hills Regional User's Group (SHRUG) presentation. The RMarkdown and HTML code used to generate this page can be found [by following this link](https://github.com/FloridaGeologicalSurvey/SHRUG2015/tree/gh_pages).
+This is a simple github.io and RMarkdown wrapper for the author's Florida Geological Survey's (FGS) 2015 Seven Hills Regional User's Group (SHRUG) presentation. The RMarkdown and HTML code used to generate this page can be found [by following this link](https://github.com/FloridaGeologicalSurvey/SHRUG2015/tree/gh-pages).
 
 All 3D models were based off geologic formation picks made by the FGS' [STATEMAP](http://www.dep.state.fl.us/geology/programs/statemap.htm) geologic mapping team. The STATEMAP program is co-funded by matching federal and state funds and is tasked with surficial geologic mapping of the state of Florida. This data has been published by the FGS as an official publication as below:
 
@@ -41,14 +41,18 @@ Users should be warned that the geologic data contained within these models has 
 
 Web-ready copies of the presentation slides from the SHRUG session [can be found here](presentation/index.html)
 
-# 3D Models
+# High Resolution 3D Models
+Note that Chrome is heavily recommended for viewing the 3D models. 
+
 <h3>
 * [3D Borehole + Pansharpend Lidar](threejs/3D Borehole Visualization/index.html)
 * [3D Borehole + Lidar](threejs/3D Borehole and LiDAR Visualization/index.html)
 * [3D Unit Surfaces](threejs/3D Surface Visualization/index.html)
 </h3>
 
-# Low Resolution 3D Models (mobile compatible)
+# Low Resolution 3D Models
+Note that Chrome is heavily recommended for viewing the 3D models. 
+
 <h3>
 * [3D Borehole + Pansharpend Lidar](threejs_lowres/3D Borehole Visualization- Low Resolution/index.html)
 * [3D Borehole + Lidar](threejs_lowres/3D Borehole and LiDAR Visualization- Low Resolution/index.html)
