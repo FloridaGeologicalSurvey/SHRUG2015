@@ -29,7 +29,7 @@ Green, W.L. Evans, C.P. Williams, C. Kromhout, S.W. Bassett, and L.M. Hannon, 20
 Florida (Open-File Map Series 104), by R.C. Green, W. L. Evans III, C.P. Williams, C. Kromhout,
 and S.W. Bassett, 2012, 40 p.](http://publicfiles.dep.state.fl.us/FGS/FGS_Publications/OFR/OFR98_FINAL.pdf)
 
-The FGS staff would like to especially thank Tanner Arrington of the South Carolina Department of Natural Resources for putting together the original poster on QGIS and threejs that inspired this presentation. That poster was presented at the USGS Digital Mapping Techniques 2015 conference in Utah, and can be found online [at this location](http://ngmdb.usgs.gov/Info/dmt/docs/DMT15_Arrington.pdf).
+The authors would like to thank Tanner Arrington of the South Carolina Department of Natural Resources for putting together the poster on QGIS and threejs that inspired this presentation. That poster was presented at the USGS Digital Mapping Techniques 2015 conference in Utah, and can be found online [at this location](http://ngmdb.usgs.gov/Info/dmt/docs/DMT15_Arrington.pdf).
 
 # Licensing and Data Quality
 
@@ -41,16 +41,18 @@ Users should be warned that the geologic data contained within these models has 
 
 Web-ready copies of the presentation slides from the SHRUG session [can be found here](presentation/index.html)
 
-# High Resolution 3D Models
-Note that Chrome is heavily recommended for viewing the 3D models. 
+# 3D Models
 
+Note that Chrome is heavily recommended for viewing the 3D models.
+
+## High Resolution Models
 <h3>
 * [3D Borehole + Pansharpend Lidar](threejs/3D Borehole Visualization/index.html)
 * [3D Borehole + Lidar](threejs/3D Borehole and LiDAR Visualization/index.html)
 * [3D Unit Surfaces](threejs/3D Surface Visualization/index.html)
 </h3>
 
-# Low Resolution 3D Models
+# Low Resolution Models
 Note that Chrome is heavily recommended for viewing the 3D models. 
 
 <h3>
